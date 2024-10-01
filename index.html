@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Weather Vue</title>
+
+    <link rel="stylesheet" href="style.css" />
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      crossorigin="anonymous"
+    />
+    <link rel="icon" type="image/x-icon" href="img/icons8-favicon-94.png" />
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    />
+  </head>
+
+  <body>
+    <!-- Header Section -->
+    <header>
+      <nav>
+        <h1 class="title">Weather Vue</h1>
+        <div class="user-interface">
+          <input type="text" id="location-input" placeholder="Enter location" />
+          <button id="search-button">Search</button>
+        </div>
+      </nav>
+    </header>
+
+    <!-- Current Weather Section -->
+    <section id="current-weather">
+      <h2 class="heders">Current Weather</h2>
+      <div class="weather-card">
+        <div class="weather-icon">
+          <img
+            id="weatherIcon"
+            alt="Weather Icon"
+            src="img/icons8-cloud-lightning-96.png"
+          />
+        </div>
+        <div class="weather-info">
+          <h3 id="location">Panadura</h3>
+          <p class="temperature">25°C</p>
+          <p class="description">Cloudy</p>
+        </div>
+        <div class="timeLbl"><span id="local-time"></span></div>
+      </div>
+
+      <!-- Weather Table -->
+      <div style="overflow-x: auto">
+        <table class="tblW">
+          <tr>
+            <th>📍 Location</th>
+            <th>🌡 Temperature</th>
+            <th>❄️ Humidity</th>
+            <th>💨🍂 Wind Speed</th>
+            <th>🌥 Condition</th>
+            <th>🏔️ Region</th>
+            <th>🗺 Country</th>
+            <th>🌍Longitude</th>
+            <th>🌏Latitude</th>
+          </tr>
+          <tr>
+            <td class="tz_id">Asia/Colombo</td>
+            <td class="temp_c">25</td>
+            <td class="humidity">33</td>
+            <td class="wind_kph">75.22</td>
+            <td class="url">Cloudy</td>
+            <td class="region">Western</td>
+            <td class="country">Sri Lanka</td>
+            <td id="lon">11.33</td>
+            <td id="lat">20.55</td>
+          </tr>
+        </table>
+      </div>
+    </section>
+
+    <section id="weather-forecast">
+      <h2 class="heders">3-Day Weather Forecast</h2>
+
+      <div class="forecast-grid">
+        <!-- Day 1 Forecast -->
+        <div class="forecast-card">
+          <h3 id="date1">2024-10-01</h3>
+          <img id="img1" src="img/sun.png" alt="Weather Icon" />
+          <p id="temp1">25°C</p>
+          <p id="desc1">Sunny</p>
+        </div>
+
+        <!-- Day 2 Forecast -->
+        <div class="forecast-card">
+          <h3 id="date2">2024-10-02</h3>
+          <img id="img2" src="img/cloudy.png" alt="Weather Icon" />
+          <p id="temp2">22°C</p>
+          <p id="desc2">Cloudy</p>
+        </div>
+
+        <!-- Day 3 Forecast -->
+        <div class="forecast-card">
+          <h3 id="date3">2024-10-03</h3>
+          <img id="img3" src="img/raining.png" alt="Weather Icon" />
+          <p id="temp3">19°C</p>
+          <p id="desc3">Rainy</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="weather-history">
+      <h2 class="heders">Last 7 Days Weather History</h2>
+
+      <div class="history-grid">
+        <!-- Day 1 History -->
+        <div class="history-card">
+          <h3 id="history-date1">2024-09-24</h3>
+          <img id="history-img1" src="img/sun.png" alt="Weather Icon" />
+          <p id="history-temp1">25°C</p>
+          <p id="history-desc1">Sunny</p>
+        </div>
+
+        <!-- Day 2 History -->
+        <div class="history-card">
+          <h3 id="history-date2">2024-09-23</h3>
+          <img id="history-img2" src="img/cloudy.png" alt="Weather Icon" />
+          <p id="history-temp2">22°C</p>
+          <p id="history-desc2">Cloudy</p>
+        </div>
+
+        <!-- Day 3 History -->
+        <div class="history-card">
+          <h3 id="history-date3">2024-09-22</h3>
+          <img id="history-img3" src="img/raining.png" alt="Weather Icon" />
+          <p id="history-temp3">19°C</p>
+          <p id="history-desc3">Rainy</p>
+        </div>
+
+        <!-- Day 4 History -->
+        <div class="history-card">
+          <h3 id="history-date4">2024-09-21</h3>
+          <img id="history-img4" src="img/cloudy (2).png" alt="Weather Icon" />
+          <p id="history-temp4">24°C</p>
+          <p id="history-desc4">Partly Cloudy</p>
+        </div>
+
+        <!-- Day 5 History -->
+        <div class="history-card">
+          <h3 id="history-date5">2024-09-20</h3>
+          <img id="history-img5" src="img/storm.png" alt="Weather Icon" />
+          <p id="history-temp5">20°C</p>
+          <p id="history-desc5">Thunderstorm</p>
+        </div>
+
+        <!-- Day 6 History -->
+        <div class="history-card">
+          <h3 id="history-date6">2024-09-19</h3>
+          <img id="history-img6" src="img/windly.png" alt="Weather Icon" />
+          <p id="history-temp6">21°C</p>
+          <p id="history-desc6">Windy</p>
+        </div>
+
+        <!-- Day 7 History -->
+        <div class="history-card">
+          <h3 id="history-date7">2024-09-18</h3>
+          <img id="history-img7" src="img/sun.png" alt="Weather Icon" />
+          <p id="history-temp7">23°C</p>
+          <p id="history-desc7">Sunny</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Map Section -->
+    <section id="weather-map">
+      <h2 class="heders">Map</h2>
+      <div id="map" style="width: 100%; height: 400px">
+        <iframe
+          src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d63398.49659716971!2d79.84738999327693!3d6.927078624452503!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3ae2593f3200a6eb%3A0x4c5fae8e2f6b9c8f!2sColombo!5e0!3m2!1sen!2slk!4v1696009934634!5m2!1sen!2slk"
+          width="1200"
+          height="500"
+          style="border: 0"
+          allowfullscreen=""
+          loading="lazy"
+          referrerpolicy="no-referrer-when-downgrade"
+        ></iframe>
+      </div>
+    </section>
+
+    <!-- Footer Section -->
+    <footer>
+      <div class="footer-content">
+        <h2>Subscribe to our newsletter</h2>
+        <form>
+          <input
+            type="email"
+            id="email-address"
+            placeholder="Enter your email"
+          />
+          <button type="submit">Subscribe</button>
+        </form>
+        <br />
+        <p>Powerd By Yuwantha.</p>
+      </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.min.js"
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"
+      crossorigin="anonymous"
+    ></script>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script
+      src="https://code.jquery.com/jquery-3.7.1.js"
+      crossorigin="anonymous"
+    ></script>
+    <script src="script.js"></script>
+  </body>
+</html>
