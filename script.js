@@ -23,102 +23,130 @@ function updateLocalTime() {
       hour12: true,
     }).format(now);
 
-    document.getElementById("local-time").textContent = localTime;
+    document.getElementById("local-time").innerHTML = localTime;
   }
 }
 
-function fetchWeatherData(location) {
-  $.ajax({
-    method: "GET",
-    url: `https://api.weatherapi.com/v1/forecast.json?key=${apiKey}&q=${location}&days=7`,
-    success: function (data) {
-      const locationData = data.location;
-      const currentData = data.current;
-      const forecastDays = data.forecast.forecastday;
+async function fetchWeatherData(location) {
+  try {
+    const response = await fetch(
+      `https://api.weatherapi.com/v1/forecast.json?key=${apiKey}&q=${location}&days=7`
+    );
 
-      document.getElementById("location").textContent = locationData.name;
-      document.querySelector(".temperature").textContent =
-        currentData.temp_c + "°C";
-      document.querySelector(".description").textContent =
-        currentData.condition.text;
-      document.getElementById("weatherIcon").src = currentData.condition.icon;
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(
+        errorData.error?.message || "Failed to fetch weather data"
+      );
+    }
 
-      locationTimezone = locationData.tz_id;
-      setInterval(updateLocalTime, 1000);
+    const data = await response.json();
+    const { location: locationData, current: currentData, forecast } = data;
+    const { forecastday: forecastDays } = forecast;
 
-      document.querySelector(".tz_id").textContent = locationData.tz_id;
-      document.querySelector(".temp_c").textContent = currentData.temp_c + "°C";
-      document.querySelector(".humidity").textContent =
-        currentData.humidity + "%";
-      document.querySelector(".wind_kph").textContent =
-        currentData.wind_kph + " kph";
-      document.querySelector(".url").textContent = currentData.condition.text;
-      document.querySelector(".region").textContent = locationData.region;
-      document.querySelector(".country").textContent = locationData.country;
-      document.getElementById("lon").textContent = locationData.lon;
-      document.getElementById("lat").textContent = locationData.lat;
+    updateWeatherUI(locationData, currentData, forecastDays);
 
-      for (let i = 0; i < 6; i++) {
-        const forecast = forecastDays[i];
-        document.getElementById(`date${i + 1}`).textContent = forecast.date;
-        document.getElementById(`temp${i + 1}`).textContent =
-          forecast.day.avgtemp_c + "°C";
-        document.getElementById(`desc${i + 1}`).textContent =
-          forecast.day.condition.text;
-        document.getElementById(`img${i + 1}`).src =
-          forecast.day.condition.icon;
-      }
+    initializeMap(locationData.lat, locationData.lon);
+    fetchWeatherHistory(locationData.lat, locationData.lon);
+  } catch (error) {
+    console.error("Weather API Error:", error);
+    showErrorToUser(
+      error.message || "Failed to fetch weather data. Please try again."
+    );
+  }
+}
 
-      initializeMap(locationData.lat, locationData.lon);
-      fetchWeatherHistory(locationData.lat, locationData.lon);
-    },
-    error: function () {
-      alert("Error fetching weather data. Please try again.");
-    },
+function showErrorToUser(message) {
+  alert(message);
+}
+
+function updateWeatherUI(locationData, currentData, forecastDays) {
+  document.getElementById("location").innerHTML = locationData.name;
+  document.querySelector(".temperature").innerHTML = `${currentData.temp_c}°C`;
+  document.querySelector(".description").innerHTML = currentData.condition.text;
+  document.getElementById("weatherIcon").src = currentData.condition.icon;
+
+  locationTimezone = locationData.tz_id;
+  setInterval(updateLocalTime, 1000); //every 1000 seconds call the update local time
+
+  const details = {
+    ".tz_id": locationData.tz_id,
+    ".temp_c": `${currentData.temp_c}°C`,
+    ".humidity": `${currentData.humidity}%`,
+    ".wind_kph": `${currentData.wind_kph} kph`,
+    ".url": currentData.condition.text,
+    ".region": locationData.region,
+    ".country": locationData.country,
+    "#lon": locationData.lon,
+    "#lat": locationData.lat,
+  };
+
+  Object.entries(details).forEach(([selector, value]) => {
+    const element = document.querySelector(selector);
+    if (element) element.innerHTML = value;
+  });
+
+  forecastDays.slice(0, 2).forEach((forecast, i) => {
+    const dayNumber = i + 1;
+    document.querySelector(`#date${dayNumber}`).innerHTML = forecast.date;
+    document.querySelector(
+      `#temp${dayNumber}`
+    ).innerHTML = `${forecast.day.avgtemp_c}°C`;
+    document.querySelector(`#desc${dayNumber}`).innerHTML =
+      forecast.day.condition.text;
+    document
+      .querySelector(`#img${dayNumber}`)
+      .setAttribute("src", forecast.day.condition.icon);
   });
 }
 
-function fetchWeatherHistory(lat, lon) {
+async function fetchWeatherHistory(lat, lon) {
   const today = new Date();
+
   for (let i = 1; i <= 7; i++) {
     const pastDate = new Date();
     pastDate.setDate(today.getDate() - i);
-    const formattedDate = pastDate.toISOString().split("T")[0];
+    const formattedDate = pastDate.toISOString().split("T")[0]; //return only yyyy-mm-dd
     console.log(`Fetching history for: ${formattedDate}`);
 
-    $.ajax({
-      method: "GET",
-      url: `https://api.weatherapi.com/v1/history.json?key=${apiKey}&q=${lat},${lon}&dt=${formattedDate}`,
-      success: function (data) {
-        if (
-          data &&
-          data.forecast &&
-          data.forecast.forecastday &&
-          data.forecast.forecastday.length > 0
-        ) {
-          const historyData = data.forecast.forecastday[0];
-          console.log("Fetched history data:", historyData);
+    try {
+      const response = await fetch(
+        `https://api.weatherapi.com/v1/history.json?key=${apiKey}&q=${lat},${lon}&dt=${formattedDate}`
+      );
 
-          document.getElementById(`history-date${i}`).textContent =
-            historyData.date;
-          document.getElementById(`history-temp${i}`).textContent =
-            historyData.day.avgtemp_c + "°C";
-          document.getElementById(`history-desc${i}`).textContent =
-            historyData.day.condition.text;
-          document.getElementById(`history-img${i}`).src =
-            historyData.day.condition.icon;
-        } else {
-          console.log(`No history data available for date: ${formattedDate}`);
-        }
-      },
-      error: function (xhr, status, error) {
-        console.error(
-          `Error fetching historical data for date: ${formattedDate}`,
-          error
-        );
-        alert("Error fetching weather history. Please try again.");
-      },
-    });
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.json();
+
+      if (
+        data &&
+        data.forecast &&
+        data.forecast.forecastday &&
+        data.forecast.forecastday.length > 0
+      ) {
+        const historyData = data.forecast.forecastday[0];
+        console.log("Fetched history data:", historyData);
+
+        document.getElementById(`history-date${i}`).innerHTML =
+          historyData.date;
+        document.getElementById(`history-temp${i}`).innerHTML =
+          historyData.day.avgtemp_c + "°C";
+        document.getElementById(`history-desc${i}`).innerHTML =
+          historyData.day.condition.text;
+        document.getElementById(`history-img${i}`).src =
+          historyData.day.condition.icon;
+      } else {
+        console.log(`No history data available for date: ${formattedDate}`);
+      }
+    } catch (error) {
+      console.error(
+        `Error fetching historical data for date: ${formattedDate}`,
+        error
+      );
+      alert("Error fetching weather history. Please try again.");
+    }
   }
 }
 

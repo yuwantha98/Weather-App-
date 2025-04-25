@@ -24,7 +24,12 @@
       <nav>
         <h1 class="title">Weather Vue</h1>
         <div class="user-interface">
-          <input type="text" id="location-input" placeholder="Enter location" />
+          <input
+            type="text"
+            id="location-input"
+            placeholder="Enter location"
+            style="margin: 10px"
+          />
           <button id="search-button">Search</button>
         </div>
       </nav>
@@ -42,7 +47,7 @@
           />
         </div>
         <div class="weather-info">
-          <h3 id="location">Panadura</h3>
+          <h3 id="location">Balapitiya</h3>
           <p class="temperature">25°C</p>
           <p class="description">Cloudy</p>
         </div>
@@ -64,7 +69,7 @@
             <th>🌏Latitude</th>
           </tr>
           <tr>
-            <td class="tz_id">Asia/Colombo</td>
+            <td class="tz_id">Asia/Balapitiya</td>
             <td class="temp_c">25</td>
             <td class="humidity">33</td>
             <td class="wind_kph">75.22</td>
@@ -109,7 +114,7 @@
     </section>
 
     <section id="weather-history">
-      <h2 class="heders">Last 7 Days Weather History</h2>
+      <h2 class="heders-last">Last 7 Days Weather History</h2>
 
       <div class="history-grid">
         <!-- Day 1 History -->
@@ -172,7 +177,7 @@
 
     <!-- Map Section -->
     <section id="weather-map">
-      <h2 class="heders">Map</h2>
+      <h2 class="heders-last">Map</h2>
       <div id="map" style="width: 100%; height: 400px">
         <iframe
           src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d63398.49659716971!2d79.84738999327693!3d6.927078624452503!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3ae2593f3200a6eb%3A0x4c5fae8e2f6b9c8f!2sColombo!5e0!3m2!1sen!2slk!4v1696009934634!5m2!1sen!2slk"
